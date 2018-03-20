@@ -47,7 +47,7 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 0->1 | 0|0|0.75|q1|
 1->2 | -pi/2|0.35|0|pi/2 -q2|
 2->3 | 0|1.25|0|q3|
-3->4 | -pi/2|-0.054|15|q4|
+3->4 | -pi/2|-0.054|1.5|q4|
 4->5 | pi/2|0|0|q5|
 5->6 | -pi/2|0|0|q6|
 6->EE |0|0|0.303|0
@@ -55,8 +55,93 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
+Inverse kinematics consist to transform, in this case,  the position of the object (cartesian space -xyz axis) and to have to determin the joint space (the robot's joins), also in this case we can get more than one solution.  (i.e., position and orientation) into  angles. In other words, from the cartesian space into joint space:
+![Alt text](/misc_images/forward-kinematics-01.png)
+
+In this case we have 6 revolute joins,  such a design is called a spherical wrist and the common point of intersection is called the wrist center. The advantage of such a design is that it kinematically decouples the position and orientation of the end effector. Mathematically, this means that instead of solving twelve nonlinear equations simultaneously (one equation for each term in the first three rows of the overall homogeneous transform matrix), it is now possible to independently solve two simpler problems: **first, the Cartesian coordinates of the wrist center**, and then **the composition of rotations to orient the end effector**. Physically speaking, a six degree of freedom serial manipulator with a spherical wrist would use the first three joints to control the position of the wrist center while the last three joints would orient the end effector as needed.
+
+**Homogeneous transform** 
+![Alt text](/misc_images/homogeneous_transform.png)
+it has been implemented in the function:
+```
+def TF_Matrix(alpha, a, d, q):
+    TF = Matrix([[cos(q), -sin(q), 0, a],
+                 [sin(q) * cos(alpha), cos(q) * cos(alpha), -sin(alpha), -sin(alpha) * d],
+                 [sin(q) * sin(alpha), cos(q) * sin(alpha), cos(alpha), cos(alpha) * d],
+                 [0, 0, 0, 1]])
+    return TF
+```
+
+It was necessary to correct for discrepancies between frames in Gazebo:
+```
+Rotation_Error = Rotation_yaw.subs(y, radians(180)) * Rotation_pitch.subs(p, radians(-90))
+```
+The composition of rotation  has been defined as: **Rotation_EE**  and each Rotation_xxx  are the rotration matrix from the transformation matrix.
+```
+Rotation_EE = Rotation_yaw * Rotation_pitch * Rotation_roll
+Rotation_EE = Rotation_EE * Rotation_Error #It has been corrected with Gazebo
+```
+##### Wrist Center definition:
+```
+WC = EE - 0.303 * Rotation_EE[:, 2]
+x = WC[0]
+y = WC[1]
+z = WC[2]
+```
+##### derive the equations to calculate all individual joint angles:
+We will use again the following image:
+![Alt text](/misc_images/robot_model.png)
+###### theta1
+It is the first joint angle, and we can determine it using Arc Tangent:
+```
+theta1 = atan2(WC[0], WC[1]) #atan2(x, y)
+```
+###### theta2
+Check the following image for theta2 and theta3:
+![Alt text](/misc_images/joint_relation.png)
+It is the second angle, and it is determiated using the same triangle expressed previous image, and the Arc Tangent is the the angle from x axis to side_b
+
+```
+        side_a = sqrt((0.054) ** 2 + (0.96 + 0.54) ** 2) #it is the hypotenuse of a3 and d4
+        side_b = sqrt((WC[2] - 0.75) ** 2 + (sqrt(WC[0] ** 2 + WC[1] ** 2) - 0.35) ** 2) #it is the hypotenuse of a3 and d4
+        side_c = 1.25
+        ## it is the application of c**2 = a**2 + b**2 - 2*a*b*cos(C) where C is the desired angle.
+        angle_a = acos((side_b ** 2 + side_c ** 2 - side_a ** 2) / (2 * side_b * side_c))
+        angle_b = acos((side_a ** 2 + side_c ** 2 - side_b ** 2) / (2 * side_a * side_c))
+
+        theta2 = np.pi / 2.0 - (angle_a + atan2((WC[2] - 0.75), sqrt((WC[0] - 0.35) ** 2 + WC[1] ** 2)))
+        # (angle_a + atan2((WC[2] - 0.75), sqrt((WC[0] - 0.35) ** 2 + WC[1] ** 2)) is the angle obtained if I draw a triangle from join 2, 3 and 5. this will be the external angle from x to the adjacent, that is why it is removing 0.75 of d1 and d2 in their axis
+        #theta2 = pi/2 - angle_a - previos angle and 
+```
+###### theta3
+It is the third angle, and it is determiated using the same triangle expressed previous image, and the Arc Tangent is the the angle from x axis to side_a
+```
+theta3 = np.pi / 2.0 - (angle_b + atan2(0.054, 0.96 + 0.54))
+```
+###### theta4, theta5 and theta6
+theta4-6 will be determined by Euler Angles from a Rotation Matrix. Wewant to isolate the final 3 thetas, so we'll solve for what we know. The first three Rotations from the base frame to frame3:
 
 
+![Alt text](/misc_images/R3_6.png)
+```
+        R0_3 = T0_1[0:3, 0:3] * T1_2[0:3, 0:3] * T2_3[0:3, 0:3]
+        R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2, q3: theta3})
+        R3_6 = R0_3.T * Rotation_EE  # Use tranpose instead of inv("LU") [R0_3.inv("LU")]
+```
+Note: R0_3  cancels on the RHS of the equation, and then is why it is oly with: `R3_6 = R0_3.T * Rotation_EE`
+
+Remember the following (Consider the extrinsic (i.e., fixed axis) X-Y-Z rotation sequence. The composite rotation matrix is,):
+![Alt text](/misc_images/Rxyz.png)
+It is possible to find beta, by recognizing:
+![Alt text](/misc_images/beta.png)
+and for gamma and alpha:
+![Alt text](/misc_images/gamma.gif)
+![Alt text](/misc_images/alpha.gif)
+```
+        theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
+        theta5 = atan2(sqrt(R3_6[0, 2] * R3_6[0, 2] + R3_6[2, 2] * R3_6[2, 2]), R3_6[1, 2])
+        theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
+```
 
 ### Project Implementation
 
