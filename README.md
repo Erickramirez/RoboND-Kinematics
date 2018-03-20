@@ -146,15 +146,16 @@ theta4-6 will be determined by Euler Angles from a Rotation Matrix. We want to i
         R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2, q3: theta3})
         R3_6 = R0_3.T * Rotation_EE  # Use tranpose instead of inv("LU") [R0_3.inv("LU")]
 ```
-Note: R0_3  cancels on the RHS of the equation, and then is why it is oly with: `R3_6 = R0_3.T * Rotation_EE`
+Note: R0_3  cancels on the RHS of the equation, and then is why it is: `R3_6 = R0_3.T * Rotation_EE`
 
 Remember the following (Consider the extrinsic (i.e., fixed axis) X-Y-Z rotation sequence. The composite rotation matrix is,):
-![Alt text](/misc_images/Rxyz.png)
+* ![Alt text](/misc_images/Rxyz.png)
 It is possible to find beta, by recognizing:
-![Alt text](/misc_images/beta.png)
+* ![Alt text](/misc_images/beta.png)
 and for gamma and alpha:
-![Alt text](/misc_images/gamma.gif)
-![Alt text](/misc_images/alpha.gif)
+* ![Alt text](/misc_images/gamma.gif)
+* ![Alt text](/misc_images/alpha.gif)
+
 ```
         theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
         theta5 = atan2(sqrt(R3_6[0, 2] * R3_6[0, 2] + R3_6[2, 2] * R3_6[2, 2]), R3_6[1, 2])
