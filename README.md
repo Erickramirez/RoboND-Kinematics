@@ -33,6 +33,7 @@ Denavit-Hartenberg Parameters:
 * source: Udacity lesson.
 
 Also, this is a representation of the robot model:
+![Alt text](/misc_images/robot_model1.jpg)
 ![Alt text](/misc_images/robot_model.png)
 
 ![Alt text](/misc_images/URDF_relation.png)
@@ -51,6 +52,9 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 4->5 | pi/2|0|0|q5|
 5->6 | -pi/2|0|0|q6|
 6->EE |0|0|0.303|0
+
+###### Generalized homogeneous transform between base_link and gripper_link:
+![Alt text](/misc_images/generalized_homogeneous_transform.jpg)
 
 Homogeneous transform matrix from base_link to gripper_link using only the position and orientation of the gripper_link:
 
