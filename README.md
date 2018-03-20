@@ -69,6 +69,7 @@ def TF_Matrix(alpha, a, d, q):
 And implemented in the lines 55 - 65.
 
 ###### Generalized homogeneous transform between base_link and gripper_link:
+It gas generated using the rotation about X, translation along X, rotation about Z and translation along Z it is like the rotation matices extracted from transformation matrices (rotation_roll for X and rotation_yaw for Z)
 ![Alt text](/misc_images/generalized_homogeneous_transform.jpg)
 
 Homogeneous transform matrix from base_link to gripper_link using only the position and orientation of the gripper_link:
