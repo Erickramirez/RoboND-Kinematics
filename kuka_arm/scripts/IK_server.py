@@ -113,10 +113,11 @@ def handle_calculate_IK(req):
         ### Your IK code here
         Rotation_EE = Rotation_EE.subs({'r': roll, 'p': pitch, 'y': yaw})
 
-        WC = EE - 0.303 * Rotation_EE[:, 2]
+        WC = EE - 0.303 * Rotation_EE[:, 2]#Wrist Center definition:
 
-        theta1 = atan2(WC[1], WC[0])
+        theta1 = atan2(WC[1], WC[0])  #atan2(x, y)
 
+        ## it is the application of c**2 = a**2 + b**2 - 2*a*b*cos(C) where C is the desired angle.
         side_a = sqrt((0.054) ** 2 + (0.96 + 0.54) ** 2)
         side_b = sqrt((WC[2] - 0.75) ** 2 + (sqrt(WC[0] ** 2 + WC[1] ** 2) - 0.35) ** 2)
         side_c = 1.25
@@ -125,13 +126,16 @@ def handle_calculate_IK(req):
         angle_b = acos((side_a ** 2 + side_c ** 2 - side_b ** 2) / (2 * side_a * side_c))
 
         theta2 = np.pi / 2.0 - (angle_a + atan2((WC[2] - 0.75), sqrt((WC[0] - 0.35) ** 2 + WC[1] ** 2)))
-        theta3 = np.pi / 2.0 - (angle_b + atan2(0.054, 0.96 + 0.54))
+        # (angle_a + atan2((WC[2] - 0.75), sqrt((WC[0] - 0.35) ** 2 + WC[1] ** 2)) is the angle obtained if I draw a triangle from join 2, 3 and 5. this will be the external angle from x to the adjacent, that is why it is removing 0.75 of d1 and d2 in their axis
+        # theta2 = pi/2 - angle_a - previos angle and
+
+        theta3 = np.pi / 2.0 - (angle_b + atan2(0.054, 0.96 + 0.54)) #and it is determiated using the same triangle expressed previous image, and the Arc Tangent is the the angle from x axis to side_a
 
         R0_3 = T0_1[0:3, 0:3] * T1_2[0:3, 0:3] * T2_3[0:3, 0:3]
         R0_3 = R0_3.evalf(subs={q1: theta1, q2: theta2, q3: theta3})
 
         R3_6 = R0_3.T * Rotation_EE  # Use tranpose instead of inv("LU") [R0_3.inv("LU")]
-
+        #The first 3 joints theta1, theta2, theta3 have the a lot of impact on the location of the end effector, or gripper. The last 3 joints: theta4, theta5, theta6 make up the spherical wrist, with theta5 being the Wrist Center.
         theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
         theta5 = atan2(sqrt(R3_6[0, 2] * R3_6[0, 2] + R3_6[2, 2] * R3_6[2, 2]), R3_6[1, 2])
         theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
