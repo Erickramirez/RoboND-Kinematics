@@ -23,7 +23,7 @@
 
 ### Kinematic Analysis
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
-The [kr210.urdf.xacro](/kuka_arm/urdf/kr210.urdf.xacro) file contains all the robot specific information like links, joints, actuators, etc. The urdf file is an XML format used in ROS for representing a robot model. URDF can only describe a robot with rigid links connected by joints in a chain or tree-like structure. It is usefult to extract the DH parameters (using joins and thei tipes, axis, links and so on) 
+The [kr210.urdf.xacro](/kuka_arm/urdf/kr210.urdf.xacro) file contains all the robot specific information like links, joints, actuators, etc. The urdf file is an XML format used in ROS for representing a robot model. URDF can only describe a robot with rigid links connected by joints in a chain or tree-like structure. It is usefult to extract the DH parameters (using joins and their types, axis, links and so on) 
 The [kr210.urdf.xacro](/kuka_arm/urdf/kr210.urdf.xacro)  contains robot specific information like link lengths and joint offsets, it is the only file you need to derive DH parameters and create transform matrices. Since urdf (and xacro) files are basically XML, they use tags to define robot geometry and properties. 
 
 Denavit-Hartenberg Parameters:
@@ -55,7 +55,7 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
-Inverse kinematics consist to transform, in this case,  the position of the object (cartesian space -xyz axis) and to have to determin the joint space (the robot's joins), also in this case we can get more than one solution.  (i.e., position and orientation) into  angles. In other words, from the cartesian space into joint space:
+Inverse kinematics consist to transform, in this case,  the position of the object (cartesian space -xyz axis) and to have to determinate the joint space (the robot's joins), also in this case we can get more than one solution.  (i.e., position and orientation) into  angles. In other words, from the cartesian space into joint space:
 ![Alt text](/misc_images/forward-kinematics-01.png)
 
 In this case we have 6 revolute joins,  such a design is called a spherical wrist and the common point of intersection is called the wrist center. The advantage of such a design is that it kinematically decouples the position and orientation of the end effector. Mathematically, this means that instead of solving twelve nonlinear equations simultaneously (one equation for each term in the first three rows of the overall homogeneous transform matrix), it is now possible to independently solve two simpler problems: **first, the Cartesian coordinates of the wrist center**, and then **the composition of rotations to orient the end effector**. Physically speaking, a six degree of freedom serial manipulator with a spherical wrist would use the first three joints to control the position of the wrist center while the last three joints would orient the end effector as needed.
@@ -119,7 +119,7 @@ It is the third angle, and it is determiated using the same triangle expressed p
 theta3 = np.pi / 2.0 - (angle_b + atan2(0.054, 0.96 + 0.54))
 ```
 ###### theta4, theta5 and theta6
-theta4-6 will be determined by Euler Angles from a Rotation Matrix. Wewant to isolate the final 3 thetas, so we'll solve for what we know. The first three Rotations from the base frame to frame3:
+theta4-6 will be determined by Euler Angles from a Rotation Matrix. We want to isolate the final 3 thetas, so we'll solve for what we know. The first three Rotations from the base frame to frame3:
 
 
 ![Alt text](/misc_images/R3_6.png)
