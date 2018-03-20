@@ -151,6 +151,8 @@ and for gamma and alpha:
 ### Project Implementation
 
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
+![Alt text](/misc_images/final_result.png)
+
 
 
 #### Conclusion
