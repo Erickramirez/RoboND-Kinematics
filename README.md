@@ -53,6 +53,20 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 5->6 | -pi/2|0|0|q6|
 6->EE |0|0|0.303|0
 
+**Homogeneous transform** 
+
+![Alt text](/misc_images/homogeneous_transform.png)
+it has been implemented in the function:
+```
+def TF_Matrix(alpha, a, d, q):
+    TF = Matrix([[cos(q), -sin(q), 0, a],
+                 [sin(q) * cos(alpha), cos(q) * cos(alpha), -sin(alpha), -sin(alpha) * d],
+                 [sin(q) * sin(alpha), cos(q) * sin(alpha), cos(alpha), cos(alpha) * d],
+                 [0, 0, 0, 1]])
+    return TF
+```
+And implemented in the lines 55 - 65.
+
 ###### Generalized homogeneous transform between base_link and gripper_link:
 ![Alt text](/misc_images/generalized_homogeneous_transform.jpg)
 
@@ -69,17 +83,7 @@ In this case we have 6 revolute joins,  such a design is called a spherical wris
 The first 3 joints theta1, theta2, theta3 have the a lot of impact on the location of the end effector, or gripper. The last 3 joints: theta4, theta5, theta6 make up the spherical wrist, with `theta5` being the Wrist Center.
 
 
-**Homogeneous transform** 
-![Alt text](/misc_images/homogeneous_transform.png)
-it has been implemented in the function:
-```
-def TF_Matrix(alpha, a, d, q):
-    TF = Matrix([[cos(q), -sin(q), 0, a],
-                 [sin(q) * cos(alpha), cos(q) * cos(alpha), -sin(alpha), -sin(alpha) * d],
-                 [sin(q) * sin(alpha), cos(q) * sin(alpha), cos(alpha), cos(alpha) * d],
-                 [0, 0, 0, 1]])
-    return TF
-```
+
 
 It was necessary to correct for discrepancies between frames in Gazebo:
 ```
@@ -91,6 +95,9 @@ Rotation_EE = Rotation_yaw * Rotation_pitch * Rotation_roll
 Rotation_EE = Rotation_EE * Rotation_Error #It has been corrected with Gazebo
 ```
 ##### Wrist Center definition:
+
+![Alt text](/misc_images/wc_position.png)
+
 ```
 WC = EE - 0.303 * Rotation_EE[:, 2]
 x = WC[0]
