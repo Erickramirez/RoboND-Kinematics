@@ -22,6 +22,7 @@
 ---
 
 ### Kinematic Analysis
+Check the file [IK_server.py](kuka_arm/scripts/IK_server.py)
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
 The [kr210.urdf.xacro](/kuka_arm/urdf/kr210.urdf.xacro) file contains all the robot specific information like links, joints, actuators, etc. The urdf file is an XML format used in ROS for representing a robot model. URDF can only describe a robot with rigid links connected by joints in a chain or tree-like structure. It is usefult to extract the DH parameters (using joins and their types, axis, links and so on) 
 The [kr210.urdf.xacro](/kuka_arm/urdf/kr210.urdf.xacro)  contains robot specific information like link lengths and joint offsets, it is the only file you need to derive DH parameters and create transform matrices. Since urdf (and xacro) files are basically XML, they use tags to define robot geometry and properties. 
