@@ -148,9 +148,5 @@ and for gamma and alpha:
 #### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results. 
 
 
-Here I'll talk about the code, what techniques I used, what worked and why, where the implementation might fail and how I might improve it if I were going to pursue this project further.  
-
-
-
-
-
+#### Conclusion
+Using diagrams helps a lot to figure out the DH parameter table. I have an issue with the types of the theta values to convert them to float. A Linux native will be better than the VM used for the project.
