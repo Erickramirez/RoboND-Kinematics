@@ -23,13 +23,22 @@
 
 ### Kinematic Analysis
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
-The [kr210.urdf.xacro file](/kuka_arm/urdf/kr210.urdf.xacro) is an xml file which contains the data related to the Denavit-Hartenberg Parameters. *In general, each transform would require six independent parameters to describe frame i relative to i-1, three for position and three for orientation. In 1955, Jacques Denavit and Richard Hartenberg proposed a systematic method of attaching reference frames to the links of a manipulator that simplified the homogeneous transforms. Their method only requires four parameters to describe the position and orientation of neighboring reference frames.
+The [kr210.urdf.xacro](/kuka_arm/urdf/kr210.urdf.xacro) file contains all the robot specific information like links, joints, actuators, etc. The urdf file is an XML format used in ROS for representing a robot model. URDF can only describe a robot with rigid links connected by joints in a chain or tree-like structure. It is usefult to extract the DH parameters (using joins and thei tipes, axis, links and so on) 
+The [kr210.urdf.xacro](/kuka_arm/urdf/kr210.urdf.xacro)  contains robot specific information like link lengths and joint offsets, it is the only file you need to derive DH parameters and create transform matrices. Since urdf (and xacro) files are basically XML, they use tags to define robot geometry and properties. 
+
+Denavit-Hartenberg Parameters:
+*In general, each transform would require six independent parameters to describe frame i relative to i-1, three for position and three for orientation. In 1955, Jacques Denavit and Richard Hartenberg proposed a systematic method of attaching reference frames to the links of a manipulator that simplified the homogeneous transforms. Their method only requires four parameters to describe the position and orientation of neighboring reference frames. The four parameters are the following:
+
 ![Alt text](/misc_images/DH-parameter.png)
 * source: Udacity lesson.
 
-in the [kr210.urdf.xacro file](/kuka_arm/urdf/kr210.urdf.xacro)
+Also, this is a representation of the robot model:
+![Alt text](/misc_images/robot_model.png)
+
+![Alt text](/misc_images/URDF_relation.png)
 
 
+For instance for the link offset, in the joint_2 and joint_1 we have values for z = to 0.33 and 0.42 respectivetly, they will be part of the d(i-1) for the link 0->1 wich is d1 = 0.33 + 0.42 = 0.75
 
 #### 2. Using the DH parameter table you derived earlier, create individual transformation matrices about each joint. In addition, also generate a generalized homogeneous transform between base_link and gripper_link using only end-effector(gripper) pose.
 
@@ -41,15 +50,13 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 3->4 | -pi/2|-0.054|15|q4|
 4->5 | pi/2|0|0|q5|
 5->6 | -pi/2|0|0|q6|
-6->EE |0|0|d7:0.303|0
+6->EE |0|0|0.303|0
 
 
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
-And here's where you can draw out and show your math for the derivation of your theta angles. 
 
-![alt text][image2]
 
 ### Project Implementation
 
@@ -59,7 +66,6 @@ And here's where you can draw out and show your math for the derivation of your 
 Here I'll talk about the code, what techniques I used, what worked and why, where the implementation might fail and how I might improve it if I were going to pursue this project further.  
 
 
-And just for fun, another example image:
-![alt text][image3]
+
 
 
