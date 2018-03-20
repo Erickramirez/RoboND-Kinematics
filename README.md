@@ -27,7 +27,7 @@ The [kr210.urdf.xacro](/kuka_arm/urdf/kr210.urdf.xacro) file contains all the ro
 The [kr210.urdf.xacro](/kuka_arm/urdf/kr210.urdf.xacro)  contains robot specific information like link lengths and joint offsets, it is the only file you need to derive DH parameters and create transform matrices. Since urdf (and xacro) files are basically XML, they use tags to define robot geometry and properties. 
 
 Denavit-Hartenberg Parameters:
-*In general, each transform would require six independent parameters to describe frame i relative to i-1, three for position and three for orientation. In 1955, Jacques Denavit and Richard Hartenberg proposed a systematic method of attaching reference frames to the links of a manipulator that simplified the homogeneous transforms. Their method only requires four parameters to describe the position and orientation of neighboring reference frames. The four parameters are the following:
+*In general, each transform would require six independent parameters to describe frame i relative to i-1, three for position and three for orientation. In 1955, Jacques Denavit and Richard Hartenberg proposed a systematic method of attaching reference frames to the links of a manipulator that simplified the homogeneous transforms. Their method only requires four parameters to describe the position and orientation of neighboring reference frames. The four parameters are the following:*
 
 ![Alt text](/misc_images/DH-parameter.png)
 * source: Udacity lesson.
@@ -52,13 +52,18 @@ Links | alpha(i-1) | a(i-1) | d(i-1) | theta(i)
 5->6 | -pi/2|0|0|q6|
 6->EE |0|0|0.303|0
 
+Homogeneous transform matrix from base_link to gripper_link using only the position and orientation of the gripper_link:
+
 
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
-Inverse kinematics consist to transform, in this case,  the position of the object (cartesian space -xyz axis) and to have to determinate the joint space (the robot's joins), also in this case we can get more than one solution.  (i.e., position and orientation) into  angles. In other words, from the cartesian space into joint space:
+Inverse kinematics consist to transform, in this case,  the position of the object (cartesian space -xyz axis) to determinate the joint space (the robot's joins), also in this case we can get more than one solution.  (i.e., position and orientation) into  angles. 
 ![Alt text](/misc_images/forward-kinematics-01.png)
 
 In this case we have 6 revolute joins,  such a design is called a spherical wrist and the common point of intersection is called the wrist center. The advantage of such a design is that it kinematically decouples the position and orientation of the end effector. Mathematically, this means that instead of solving twelve nonlinear equations simultaneously (one equation for each term in the first three rows of the overall homogeneous transform matrix), it is now possible to independently solve two simpler problems: **first, the Cartesian coordinates of the wrist center**, and then **the composition of rotations to orient the end effector**. Physically speaking, a six degree of freedom serial manipulator with a spherical wrist would use the first three joints to control the position of the wrist center while the last three joints would orient the end effector as needed.
+
+The first 3 joints theta1, theta2, theta3 have the a lot of impact on the location of the end effector, or gripper. The last 3 joints: theta4, theta5, theta6 make up the spherical wrist, with `theta5` being the Wrist Center.
+
 
 **Homogeneous transform** 
 ![Alt text](/misc_images/homogeneous_transform.png)
